@@ -27,8 +27,5 @@ Everything runs locally. Zero data collection. Every feature is opt-in.
 2. Go to `chrome://extensions` → Enable Developer mode
 3. Load unpacked → select `extension/` folder
 
-## Contributing
-See [CONTRIBUTING.md](CONTRIBUTING.md)
-
 ## License
 MIT
