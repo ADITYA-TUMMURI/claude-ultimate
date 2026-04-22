@@ -1,4 +1,4 @@
-# ⌖ Chisel-I
+# ⌖ CLAUDE-ULTIMATE
 
 > The ultimate Claude.ai companion extension — fully local, zero servers.
 
