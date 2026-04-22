@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "Claude Ultimate",
+  "version": "1.0.0",
+  "description": "Advanced usage tracking, prompt tools, and export features for Claude.ai",
+
+  "permissions": [
+    "storage",
+    "alarms",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://claude.ai/*"
+  ],
+
+  "icons": {
+    "16":  "icons/icon16.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://claude.ai/*"],
+      "js": ["injected/fetch-override.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://claude.ai/*"],
+      "js": ["lib/storage.js", "lib/sse-parser.js", "lib/message-processor.js", "lib/dom-scraper.js", "lib/markdown-converter.js", "content.js", "ui/sidebar.js", "lib/timer.js", "ui/banner.js", "ui/modal.js", "lib/keyboard.js", "ui/templates-modal.js", "ui/tags-panel.js"],
+      "css": ["ui/styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Claude Ultimate",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

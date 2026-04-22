@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Ultimate — Settings</title>
+  <style>
+    /* ── Reset ──────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Base ───────────────────────────────────────────────────────────── */
+    :root {
+      --purple:      #a78bfa;
+      --purple-dark: #7c3aed;
+      --bg:          #0a0a12;
+      --bg-panel:    rgba(255,255,255,0.03);
+      --border:      rgba(255,255,255,0.08);
+      --text:        #e2e8f0;
+      --text-dim:    rgba(255,255,255,0.4);
+      --text-muted:  rgba(255,255,255,0.22);
+      --green:       #34d399;
+      --red:         #ef4444;
+      --amber:       #fbbf24;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      width: 400px;
+      min-height: 300px;
+      max-height: 600px;
+      overflow-y: auto;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    body::-webkit-scrollbar { width: 4px; }
+    body::-webkit-scrollbar-track { background: transparent; }
+    body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(10,10,18,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 8px; }
+
+    header h1 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--purple);
+      letter-spacing: 0.02em;
+    }
+
+    .header-version {
+      font-size: 9px;
+      color: var(--text-muted);
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+    }
+
+    /* ── Usage strip (below header) ─────────────────────────────────────── */
+    #usage-strip {
+      background: rgba(167,139,250,0.04);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex;
+      gap: 20px;
+    }
+
+    .usage-item { display: flex; flex-direction: column; gap: 1px; }
+
+    .usage-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .usage-value {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--purple);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .usage-model {
+      margin-left: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1px;
+    }
+
+    /* ── Nav tabs ───────────────────────────────────────────────────────── */
+    nav {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    nav::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      flex-shrink: 0;
+      padding: 8px 13px;
+      border: none;
+      background: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active {
+      color: var(--purple);
+      border-bottom-color: var(--purple);
+    }
+
+    /* ── Tab panels ─────────────────────────────────────────────────────── */
+    .tab-panel { display: none; padding: 14px 16px; }
+    .tab-panel.active { display: block; }
+
+    /* ── Section ────────────────────────────────────────────────────────── */
+    .section { margin-bottom: 18px; }
+
+    .section-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    /* ── Input components ───────────────────────────────────────────────── */
+    label.field-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      font-size: 11px;
+      font-family: inherit;
+      padding: 7px 10px;
+      transition: border-color 0.15s;
+      resize: vertical;
+    }
+    textarea:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: rgba(167,139,250,0.45);
+      background: rgba(255,255,255,0.06);
+    }
+
+    /* ── Toggle switch ──────────────────────────────────────────────────── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
+    .toggle-info { display: flex; flex-direction: column; gap: 1px; }
+    .toggle-name { font-size: 12px; color: var(--text); font-weight: 500; }
+    .toggle-desc { font-size: 10px; color: var(--text-muted); }
+
+    .switch {
+      position: relative;
+      width: 34px;
+      height: 19px;
+      flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch-track {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.1);
+      border-radius: 99px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .switch-track::before {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 13px; height: 13px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .switch input:checked + .switch-track { background: var(--purple-dark); }
+    .switch input:checked + .switch-track::before {
+      transform: translateX(15px);
+      background: #fff;
+    }
+
+    /* ── Mode preset grid ───────────────────────────────────────────────── */
+    .preset-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .preset-row {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .preset-key {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--purple);
+      padding-top: 8px;
+      text-transform: capitalize;
+    }
+
+    /* ── Keyboard bindings ──────────────────────────────────────────────── */
+    .kbd-table { width: 100%; border-collapse: collapse; }
+    .kbd-table tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .kbd-table td { padding: 6px 4px; font-size: 11px; vertical-align: middle; }
+    .kbd-combo {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 10px;
+      color: var(--purple);
+      background: rgba(167,139,250,0.08);
+      border: 1px solid rgba(167,139,250,0.2);
+      border-radius: 4px;
+      padding: 2px 6px;
+      white-space: nowrap;
+    }
+    .kbd-action { color: var(--text-dim); }
+    .kbd-rebind-btn {
+      font-size: 9px;
+      padding: 2px 7px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .kbd-rebind-btn:hover { color: var(--purple); border-color: rgba(167,139,250,0.3); }
+    .kbd-rebind-btn.recording {
+      color: var(--amber);
+      border-color: var(--amber);
+      animation: kbd-pulse 0.8s ease infinite;
+    }
+    @keyframes kbd-pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+    /* ── Template list ──────────────────────────────────────────────────── */
+    .template-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+
+    .template-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 8px;
+    }
+    .template-row-name {
+      flex: 1;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--purple);
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .template-row-preview {
+      flex: 2;
+      font-size: 10px;
+      color: var(--text-muted);
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .template-del-btn {
+      background: none;
+      border: none;
+      color: rgba(239,68,68,0.5);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 0 2px;
+      flex-shrink: 0;
+      transition: color 0.15s;
+    }
+    .template-del-btn:hover { color: var(--red); }
+
+    /* ── Buttons ────────────────────────────────────────────────────────── */
+    .btn-primary {
+      width: 100%;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, var(--purple-dark), var(--purple));
+      border: none;
+      border-radius: 7px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.5; cursor: default; }
+
+    .btn-secondary {
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-secondary:hover { background: rgba(167,139,250,0.08); color: var(--purple); }
+
+    /* ── Save feedback ──────────────────────────────────────────────────── */
+    .save-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .status-msg {
+      font-size: 11px;
+      min-height: 14px;
+      transition: opacity 0.3s;
+    }
+    .status-msg.ok  { color: var(--green); }
+    .status-msg.err { color: var(--red); }
+
+    /* ── Tags summary ───────────────────────────────────────────────────── */
+    .tag-stats-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: rgba(167,139,250,0.1);
+      border: 1px solid rgba(167,139,250,0.2);
+      color: var(--purple);
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .tag-chip-count {
+      background: rgba(167,139,250,0.2);
+      border-radius: 99px;
+      padding: 0 4px;
+      font-size: 9px;
+    }
+
+    /* ── Divider ────────────────────────────────────────────────────────── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 14px 0;
+    }
+
+    /* ── Add template mini-form ─────────────────────────────────────────── */
+    .add-template-form {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .add-template-form label.field-label { margin-bottom: 0; }
+
+    /* ── Footer ─────────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    footer a {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    footer a:hover { color: var(--purple); }
+    .footer-version { font-size: 10px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <span aria-hidden="true">⚡</span>
+      <h1>Claude Ultimate</h1>
+    </div>
+    <span class="header-version">v1.0.0</span>
+  </header>
+
+  <!-- Live usage strip -->
+  <div id="usage-strip" aria-label="Usage summary">
+    <div class="usage-item">
+      <span class="usage-label">Session</span>
+      <span class="usage-value" id="strip-session">—</span>
+    </div>
+    <div class="usage-item">
+      <span class="usage-label">Weekly</span>
+      <span class="usage-value" id="strip-weekly">—</span>
+    </div>
+    <div class="usage-model">
+      <span class="usage-label">Model</span>
+      <span class="usage-value" id="strip-model" style="font-size:11px;color:rgba(167,139,250,0.7)">—</span>
+    </div>
+  </div>
+
+  <!-- Tab navigation -->
+  <nav role="tablist" aria-label="Settings sections">
+    <button class="tab-btn active" role="tab" aria-selected="true"
+            aria-controls="tab-instructions" data-tab="instructions">Instructions</button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            aria-controls="tab-modes" data-tab="modes">Modes</button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            aria-controls="tab-templates" data-tab="templates">Templates</button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            aria-controls="tab-keyboard" data-tab="keyboard">Shortcuts</button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            aria-controls="tab-tags" data-tab="tags">Tags</button>
+  </nav>
+
+  <!-- ── Tab: Instructions ──────────────────────────────────────────────── -->
+  <section class="tab-panel active" id="tab-instructions" role="tabpanel">
+
+    <div class="section">
+      <div class="section-title">Custom Instructions</div>
+      <div class="toggle-row" style="margin-bottom:8px">
+        <div class="toggle-info">
+          <span class="toggle-name">Enable custom instructions</span>
+          <span class="toggle-desc">Prepend to first message of each new chat</span>
+        </div>
+        <label class="switch" aria-label="Enable custom instructions">
+          <input type="checkbox" id="instr-enabled" />
+          <span class="switch-track"></span>
+        </label>
+      </div>
+      <label class="field-label" for="instr-text">Instructions text</label>
+      <textarea id="instr-text" rows="5"
+        placeholder="e.g. You are a senior engineer. Always use TypeScript. Prefer functional patterns."
+        aria-label="Custom instructions text"></textarea>
+      <div class="save-bar">
+        <span class="status-msg" id="instr-status" aria-live="polite"></span>
+        <button class="btn-primary" id="instr-save" style="width:auto;padding:7px 18px">Save</button>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="section">
+      <div class="section-title">Prompt Trimmer</div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <span class="toggle-name">Prompt Trimmer</span>
+          <span class="toggle-desc">Remove filler words + duplicates before sending</span>
+        </div>
+        <label class="switch" aria-label="Enable prompt trimmer">
+          <input type="checkbox" id="trimmer-toggle" />
+          <span class="switch-track"></span>
+        </label>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="section">
+      <div class="section-title">Response Length Default</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn-secondary" data-length="short"  id="len-short">Short</button>
+        <button class="btn-secondary" data-length="medium" id="len-medium">Medium</button>
+        <button class="btn-secondary" data-length="detailed" id="len-detailed">Detailed</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── Tab: Modes ─────────────────────────────────────────────────────── -->
+  <section class="tab-panel" id="tab-modes" role="tabpanel">
+    <div class="section">
+      <div class="section-title">Response Style Presets</div>
+      <p style="font-size:10px;color:var(--text-muted);margin-bottom:12px">
+        Edit the instruction prepended for each style mode.
+      </p>
+      <div class="preset-grid" id="preset-grid">
+        <!-- Populated by JS -->
+      </div>
+      <div class="save-bar" style="margin-top:10px">
+        <span class="status-msg" id="modes-status" aria-live="polite"></span>
+        <button class="btn-primary" id="modes-save" style="width:auto;padding:7px 18px">Save All</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tab: Templates ─────────────────────────────────────────────────── -->
+  <section class="tab-panel" id="tab-templates" role="tabpanel">
+    <div class="section">
+      <div class="section-title">Prompt Templates</div>
+      <div class="template-list" id="template-list">
+        <!-- Populated by JS -->
+      </div>
+
+      <details>
+        <summary style="font-size:11px;color:var(--text-dim);cursor:pointer;padding:4px 0">
+          + Add custom template
+        </summary>
+        <div class="add-template-form" id="add-template-form">
+          <label class="field-label" for="new-tpl-name">Template name</label>
+          <input type="text" id="new-tpl-name" placeholder="e.g. Refactor" maxlength="40"
+                 aria-label="New template name" />
+          <label class="field-label" for="new-tpl-body">Template body</label>
+          <textarea id="new-tpl-body" rows="4"
+            placeholder="Use [PLACEHOLDERS] for fillable spots…"
+            aria-label="New template body"></textarea>
+          <button class="btn-primary" id="add-template-btn">Add Template</button>
+          <span class="status-msg" id="template-status" aria-live="polite"></span>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ── Tab: Keyboard ──────────────────────────────────────────────────── -->
+  <section class="tab-panel" id="tab-keyboard" role="tabpanel">
+    <div class="section">
+      <div class="section-title">Keyboard Shortcuts</div>
+      <p style="font-size:10px;color:var(--text-muted);margin-bottom:10px">
+        Click "Rebind" then press your new combo. Shortcuts never fire inside the compose box.
+      </p>
+      <table class="kbd-table" id="kbd-table" aria-label="Keyboard shortcut bindings">
+        <tbody><!-- Populated by JS --></tbody>
+      </table>
+      <div class="save-bar" style="margin-top:10px">
+        <span class="status-msg" id="kbd-status" aria-live="polite"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tab: Tags ──────────────────────────────────────────────────────── -->
+  <section class="tab-panel" id="tab-tags" role="tabpanel">
+    <div class="section">
+      <div class="section-title">All Conversation Tags</div>
+      <div id="tag-stats" aria-label="Tags across all conversations">
+        <p style="font-size:11px;color:var(--text-muted)">Loading…</p>
+      </div>
+      <div style="margin-top:10px">
+        <button class="btn-secondary" id="clear-all-tags-btn">Clear all tags</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <a href="https://claude.ai" target="_blank" rel="noopener">Open Claude</a>
+    <span class="footer-version">Claude Ultimate v1.0.0</span>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
